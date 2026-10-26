@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view locale="de">
+    <h:head>
+        <title>Ghost Net Fishing – Netzdetails</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <h:outputStylesheet name="css/style.css"/>
+    </h:head>
+    <h:body>
+        <div class="seite">
+            <h1>Netzdetails</h1>
+            <nav>
+                <h:link value="Netzübersicht" outcome="netzuebersicht.xhtml"/>
+                <h:link value="Einstieg" outcome="index.xhtml"/>
+            </nav>
+
+            <h:panelGroup layout="block" styleClass="meldung fehler" rendered="#{netzBearbeitungBean.ausgewaehltesNetz == null}">
+                <h:outputText value="Es ist kein Netz ausgewählt. Bitte ein Netz in der Übersicht öffnen."/>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" rendered="#{netzBearbeitungBean.ausgewaehltesNetz != null}">
+                <h:panelGroup layout="block" styleClass="meldung fehler" rendered="#{not empty netzBearbeitungBean.fehlermeldung}">
+                    <h:outputText value="#{netzBearbeitungBean.fehlermeldung}"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="meldung hinweis" rendered="#{not empty netzBearbeitungBean.hinweismeldung}">
+                    <h:outputText value="#{netzBearbeitungBean.hinweismeldung}"/>
+                </h:panelGroup>
+
+                <dl>
+                    <dt>Breitengrad</dt>
+                    <dd><h:outputText value="#{netzBearbeitungBean.ausgewaehltesNetz.breitengrad}"/></dd>
+                    <dt>Längengrad</dt>
+                    <dd><h:outputText value="#{netzBearbeitungBean.ausgewaehltesNetz.laengengrad}"/></dd>
+                    <dt>Geschätzte Größe</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.ausgewaehltesNetz.geschaetzteGroesse}"/>
+                        <h:outputText value=" m²"/>
+                    </dd>
+                    <dt>Status</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.statusText(netzBearbeitungBean.ausgewaehltesNetz.status)}"/>
+                    </dd>
+                    <dt>Beschreibung</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.ausgewaehltesNetz.beschreibung}"
+                                      rendered="#{not empty netzBearbeitungBean.ausgewaehltesNetz.beschreibung}"/>
+                        <h:outputText value="Keine Beschreibung"
+                                      rendered="#{empty netzBearbeitungBean.ausgewaehltesNetz.beschreibung}"/>
+                    </dd>
+                    <dt>Meldende Person</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.personText(netzBearbeitungBean.ausgewaehltesNetz.meldendePerson)}"/>
+                    </dd>
+                    <dt>Bergende Person</dt>
+                    <dd>
+                        <h:outputText value="Keine"
+                                      rendered="#{netzBearbeitungBean.ausgewaehltesNetz.bergendePerson == null}"/>
+                        <h:outputText value="#{netzBearbeitungBean.ausgewaehltesNetz.bergendePerson.benutzername}"
+                                      rendered="#{netzBearbeitungBean.ausgewaehltesNetz.bergendePerson != null}"/>
+                    </dd>
+                    <dt>Gemeldet am</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.zeitpunkt(netzBearbeitungBean.ausgewaehltesNetz.gemeldetAm)}"/>
+                    </dd>
+                    <dt>Übernommen am</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.zeitpunkt(netzBearbeitungBean.ausgewaehltesNetz.uebernommenAm)}"/>
+                    </dd>
+                    <dt>Geborgen am</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.zeitpunkt(netzBearbeitungBean.ausgewaehltesNetz.geborgenAm)}"/>
+                    </dd>
+                    <dt>Verschollen am</dt>
+                    <dd>
+                        <h:outputText value="#{netzBearbeitungBean.zeitpunkt(netzBearbeitungBean.ausgewaehltesNetz.verschollenAm)}"/>
+                    </dd>
+                </dl>
+
+                <h:form id="aktionen">
+                    <h2>Aktionen</h2>
+                    <p>Ob eine Aktion zulässig ist, hängt vom Status und von der ausgewählten Person ab.</p>
+                    <h:commandButton value="Bergung übernehmen" action="#{netzBearbeitungBean.bergungUebernehmen}"/>
+                    <h:commandButton value="Als geborgen melden" action="#{netzBearbeitungBean.alsGeborgenMelden}"/>
+                    <h:commandButton value="Als verschollen melden" action="#{netzBearbeitungBean.alsVerschollenMelden}"/>
+                </h:form>
+            </h:panelGroup>
+        </div>
+    </h:body>
+</f:view>
+</html>

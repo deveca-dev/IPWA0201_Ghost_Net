@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view locale="de">
+    <h:head>
+        <title>Ghost Net Fishing – Netzübersicht</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <h:outputStylesheet name="css/style.css"/>
+    </h:head>
+    <h:body>
+        <div class="seite">
+            <h1>Netzübersicht</h1>
+            <nav>
+                <h:link value="Einstieg" outcome="index.xhtml"/>
+                <h:form styleClass="nav-form">
+                    <h:commandLink value="Netz melden" action="#{netzBearbeitungBean.meldeformularOeffnen}"/>
+                </h:form>
+            </nav>
+
+            <p>
+                Aktueller Zugang:
+                <h:outputText value="Anonym" rendered="#{userContext.anonym}"/>
+                <h:outputText value="#{userContext.benutzername}" rendered="#{not userContext.anonym}"/>
+            </p>
+
+            <h:panelGroup layout="block" styleClass="meldung hinweis">
+                <h:outputText value="#{netzListeBean.backendHinweis}"/>
+            </h:panelGroup>
+
+            <h:form id="filter">
+                <h:outputLabel for="status" value="Status"/>
+                <h:selectOneMenu id="status" value="#{netzListeBean.statusFilter}">
+                    <f:selectItems value="#{netzListeBean.filterOptionen}" var="option"
+                                   itemValue="#{option.wert}" itemLabel="#{option.bezeichnung}"/>
+                </h:selectOneMenu>
+                <h:commandButton value="Filter anwenden"/>
+
+                <div class="tabelle-rahmen">
+                    <h:dataTable value="#{netzListeBean.geisternetze}" var="netz"
+                                 rendered="#{not empty netzListeBean.geisternetze}">
+                        <h:column>
+                            <f:facet name="header">Position (Breitengrad, Längengrad)</f:facet>
+                            <h:outputText value="#{netz.breitengrad}"/>
+                            <h:outputText value=", "/>
+                            <h:outputText value="#{netz.laengengrad}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Geschätzte Größe (m²)</f:facet>
+                            <h:outputText value="#{netz.geschaetzteGroesse}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+                            <h:outputText value="#{netzListeBean.statusText(netz.status)}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Details</f:facet>
+                            <h:commandLink value="Anzeigen" action="#{netzBearbeitungBean.netzAnzeigen(netz)}"/>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+            </h:form>
+        </div>
+    </h:body>
+</f:view>
+</html>

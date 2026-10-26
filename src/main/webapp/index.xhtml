@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view locale="de">
+    <h:head>
+        <title>Ghost Net Fishing – Einstieg</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <h:outputStylesheet name="css/style.css"/>
+    </h:head>
+    <h:body>
+        <div class="seite">
+            <h1>Ghost Net Fishing</h1>
+            <p>Wähle einen vorhandenen Benutzernamen, lege einen neuen an oder fahre anonym fort.</p>
+
+            <h:panelGroup layout="block" styleClass="meldung hinweis">
+                <h:outputText value="#{landingBean.personenHinweis}"/>
+            </h:panelGroup>
+            <h:panelGroup layout="block" styleClass="meldung fehler" rendered="#{not empty landingBean.fehlermeldung}">
+                <h:outputText value="#{landingBean.fehlermeldung}"/>
+            </h:panelGroup>
+            <h:panelGroup layout="block" styleClass="meldung hinweis" rendered="#{not empty landingBean.hinweismeldung}">
+                <h:outputText value="#{landingBean.hinweismeldung}"/>
+            </h:panelGroup>
+
+            <h:form id="vorhanden">
+                <h2>Vorhandenen Benutzernamen auswählen</h2>
+                <h:outputLabel for="person" value="Benutzername"/>
+                <h:selectOneMenu id="person" value="#{landingBean.ausgewaehltePersonId}">
+                    <f:selectItem itemLabel="Bitte auswählen" noSelectionOption="true"/>
+                    <f:selectItems value="#{landingBean.vorhandenePersonen}" var="person"
+                                   itemValue="#{person.id}" itemLabel="#{person.benutzername}"/>
+                </h:selectOneMenu>
+                <h:commandButton value="Auswählen" action="#{landingBean.vorhandenePersonAuswaehlen}"/>
+            </h:form>
+
+            <h:form id="neu">
+                <h2>Neuen Benutzernamen anlegen</h2>
+                <h:outputLabel for="name" value="Neuer Benutzername"/>
+                <h:inputText id="name" value="#{landingBean.neuerBenutzername}" maxlength="50"/>
+                <h:commandButton value="Anlegen und fortfahren" action="#{landingBean.neuenBenutzerAnlegen}"/>
+            </h:form>
+
+            <h:form id="anonym">
+                <h2>Ohne Benutzername</h2>
+                <p>Anonym fortfahren speichert keine meldende Person bei späteren Meldungen.</p>
+                <h:commandButton value="Anonym fortfahren" action="#{landingBean.anonymFortfahren}"/>
+            </h:form>
+        </div>
+    </h:body>
+</f:view>
+</html>

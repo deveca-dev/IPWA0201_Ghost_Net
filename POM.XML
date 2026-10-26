@@ -13,6 +13,18 @@
         <version>7.0.0.Final</version>
     </dependency>
 
+    <!-- Jakarta Faces für die XHTML-Seiten -->
+    <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>jakarta.faces</artifactId>
+        <version>4.1.19</version>
+    </dependency>
+    <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>3.0.0</version>
+    </dependency>
+
     <!-- JPA für unsere Datenbankentitäten -->
     <dependency>
         <groupId>jakarta.persistence</groupId>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view locale="de">
+    <h:head>
+        <title>Ghost Net Fishing – Netz melden</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <h:outputStylesheet name="css/style.css"/>
+    </h:head>
+    <h:body>
+        <div class="seite">
+            <h1>Netz melden</h1>
+            <nav>
+                <h:link value="Netzübersicht" outcome="netzuebersicht.xhtml"/>
+                <h:link value="Einstieg" outcome="index.xhtml"/>
+            </nav>
+
+            <h:panelGroup layout="block" styleClass="meldung hinweis" rendered="#{userContext.anonym}">
+                <h:outputText value="Du bist ohne Benutzernamen unterwegs. Diese Meldung speichert keine meldende Person."/>
+            </h:panelGroup>
+            <h:panelGroup layout="block" styleClass="meldung fehler" rendered="#{not empty netzBearbeitungBean.fehlermeldung}">
+                <h:outputText value="#{netzBearbeitungBean.fehlermeldung}"/>
+            </h:panelGroup>
+            <h:panelGroup layout="block" styleClass="meldung hinweis" rendered="#{not empty netzBearbeitungBean.hinweismeldung}">
+                <h:outputText value="#{netzBearbeitungBean.hinweismeldung}"/>
+            </h:panelGroup>
+
+            <h:form id="meldung">
+                <h:outputLabel for="breitengrad" value="Breitengrad"/>
+                <h:inputText id="breitengrad" value="#{netzBearbeitungBean.breitengrad}" required="true"
+                             requiredMessage="Bitte den Breitengrad angeben."
+                             converterMessage="Bitte den Breitengrad als Zahl angeben, zum Beispiel 54,321.">
+                    <f:convertNumber maxFractionDigits="6"/>
+                </h:inputText>
+                <h:message for="breitengrad" styleClass="feld-fehler"/>
+
+                <h:outputLabel for="laengengrad" value="Längengrad"/>
+                <h:inputText id="laengengrad" value="#{netzBearbeitungBean.laengengrad}" required="true"
+                             requiredMessage="Bitte den Längengrad angeben."
+                             converterMessage="Bitte den Längengrad als Zahl angeben, zum Beispiel 10,125.">
+                    <f:convertNumber maxFractionDigits="6"/>
+                </h:inputText>
+                <h:message for="laengengrad" styleClass="feld-fehler"/>
+
+                <h:outputLabel for="groesse" value="Geschätzte Größe in m²"/>
+                <h:inputText id="groesse" value="#{netzBearbeitungBean.geschaetzteGroesse}" required="true"
+                             requiredMessage="Bitte die geschätzte Größe angeben."
+                             converterMessage="Bitte die Größe als Zahl angeben, zum Beispiel 12,5.">
+                    <f:convertNumber maxFractionDigits="2"/>
+                </h:inputText>
+                <h:message for="groesse" styleClass="feld-fehler"/>
+
+                <h:outputLabel for="beschreibung" value="Beschreibung (optional)"/>
+                <h:inputTextarea id="beschreibung" value="#{netzBearbeitungBean.beschreibung}"/>
+
+                <div class="checkbox-zeile">
+                    <h:selectBooleanCheckbox id="anonym" value="#{netzBearbeitungBean.anonymMelden}"/>
+                    <h:outputLabel for="anonym" value="Anonym melden (keine meldende Person speichern)"/>
+                </div>
+
+                <h:commandButton value="Meldung speichern" action="#{netzBearbeitungBean.netzMelden}"/>
+            </h:form>
+        </div>
+    </h:body>
+</f:view>
+</html>
