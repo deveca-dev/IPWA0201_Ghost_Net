@@ -20,6 +20,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
+            <property name="hibernate.type.preferred_instant_jdbc_type" value="TIMESTAMP_WITH_TIMEZONE"/>
             <property name="hibernate.hbm2ddl.auto"
                       value="validate"/>
         </properties>

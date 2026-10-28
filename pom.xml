@@ -42,6 +42,12 @@
     <artifactId>postgresql</artifactId>
     <version>42.7.13</version>
 </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.14.4</version>
+        <scope>test</scope>
+    </dependency>
 </dependencies>
   <build>
     <plugins>
@@ -54,7 +60,11 @@
       </plugin>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.3</version>
+        <version>3.3.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.4</version>
       </plugin>
     </plugins>
   </build>

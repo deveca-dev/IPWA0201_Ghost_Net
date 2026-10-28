@@ -23,17 +23,25 @@ Wenn die Datenbank erfolgreich gestartet wurde, und der Service `healty`anzeigt 
 jdbc:postgresql://localhost:5432/ghostnet
 ```
 
-## Starten der Anwendung
-Starte die Anwendung mit Maven
+## Anwendung bauen und starten
+
+Das Projekt verwendet JSF/CDI und Tomcat, nicht Spring Boot. Voraussetzung ist ein JDK 25.
+
 ```bash
-mvn spring-boot:run
+mvn test package
 ```
 
-## Stoppen der Anwendung
-Stoppe die Anwendung mit Maven
+Das erzeugte WAR aus `target/` wird in Tomcat 11 bereitgestellt. Alternativ das Projekt in Eclipse als Maven-Projekt aktualisieren und über „Run on Server“ starten.
+
+Vor dem ersten Zugriff auf die Persistenz müssen Schema und externe Verbindungseinstellungen eingerichtet sein:
+
 ```bash
-mvn spring-boot:stop
+sh scripts/migrate.sh db/migration/V001__initial_schema.sql
 ```
+
+Die genaue Einrichtung, die benötigten Tomcat-Umgebungsvariablen und die noch offenen Laufzeitprüfungen stehen in [docs/Persistenz.md](docs/Persistenz.md).
+
+**Stand:** Persistenzinfrastruktur und Repositories sind vorbereitet. Die Oberflächen-Beans enthalten weiterhin Platzhalter; Services und fachliche Speicherung sind noch anzuschließen.
 
 ## Beenden der Datenbank
 Stoppe die Datenbank mit Docker
