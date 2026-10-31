@@ -29,4 +29,8 @@ public class PersonRepository {
         Person person = entityManager.find(Person.class, id);
         return Optional.ofNullable(person);
     }
+
+    public void speichern(Person person) {
+        entityManager.persist(person);
+    }
 }

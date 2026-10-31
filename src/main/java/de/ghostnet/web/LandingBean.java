@@ -6,6 +6,7 @@ import de.ghostnet.domain.Person;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import de.ghostnet.application.PersonService;
 
 @Named
 @RequestScoped
@@ -16,6 +17,9 @@ public class LandingBean {
 
     @Inject
     private UserContext userContext;
+
+    @Inject
+    private PersonService personService;
 
     private Long ausgewaehltePersonId;
     private String neuerBenutzername;
@@ -30,42 +34,41 @@ public class LandingBean {
     public String vorhandenePersonAuswaehlen() {
         fehlermeldung = null;
         hinweismeldung = null;
-        if (ausgewaehltePersonId == null) {
-            fehlermeldung = "Bitte einen vorhandenen Benutzernamen auswählen.";
-            return null;
-        }
-        // TODO: Person über den Person-Service laden und userContext.personAuswaehlen(person) aufrufen.
-        hinweismeldung = "Die Auswahl eines vorhandenen Benutzernamens ist noch nicht möglich, "
-                + "weil der Person-Service noch nicht angebunden ist. Es wurde niemand angemeldet.";
-        return null;
+    
+        return personService.anhandIdLaden(ausgewaehltePersonId)
+                .map(person -> {
+                    userContext.personAuswaehlen(person);
+                    return NETZUEBERSICHT;
+                })
+                .orElseGet(() -> {
+                    fehlermeldung = "Bitte einen vorhandenen Benutzernamen auswählen.";
+                    return null;
+                });
     }
 
     public String neuenBenutzerAnlegen() {
         fehlermeldung = null;
         hinweismeldung = null;
-        String name = neuerBenutzername == null ? "" : neuerBenutzername.trim();
-        if (name.isEmpty()) {
-            fehlermeldung = "Bitte einen Benutzernamen eingeben.";
+    
+        try {
+            Person person = personService.anlegen(neuerBenutzername);
+            userContext.personAuswaehlen(person);
+    
+            return NETZUEBERSICHT;
+        } catch (IllegalArgumentException fehler) {
+            fehlermeldung = fehler.getMessage();
+            return null;
+        } catch (jakarta.persistence.PersistenceException fehler) {
+            fehlermeldung =
+                    "Die Person konnte nicht gespeichert werden. "
+                    + "Prüfe, ob der Benutzername bereits vergeben ist.";
+    
             return null;
         }
-        if (name.length() > MAX_BENUTZERNAME) {
-            fehlermeldung = "Der Benutzername darf höchstens " + MAX_BENUTZERNAME + " Zeichen lang sein.";
-            return null;
-        }
-        neuerBenutzername = name;
-        // TODO: Person über den Person-Service anlegen und userContext.personAuswaehlen(person) aufrufen.
-        hinweismeldung = "Der Benutzername wurde nicht angelegt, weil der Person-Service noch nicht angebunden ist. "
-                + "Es wurde niemand angemeldet.";
-        return null;
     }
 
     public List<Person> getVorhandenePersonen() {
-        // TODO: Vorhandene Personen über den Person-Service laden.
-        return List.of();
-    }
-
-    public String getPersonenHinweis() {
-        return "Vorhandene Benutzernamen können noch nicht geladen werden, weil der Person-Service nicht angebunden ist.";
+        return personService.alleLaden();
     }
 
     public Long getAusgewaehltePersonId() {
