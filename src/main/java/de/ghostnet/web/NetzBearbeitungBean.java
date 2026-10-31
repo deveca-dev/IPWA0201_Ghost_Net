@@ -140,39 +140,66 @@ public class NetzBearbeitungBean implements Serializable {
     public String alsGeborgenMelden() {
         fehlermeldung = null;
         hinweismeldung = null;
+    
         if (ausgewaehltesNetz == null) {
             fehlermeldung = "Es ist kein Netz ausgewählt.";
             return null;
         }
-        if (ausgewaehltesNetz.getStatus() != NetStatus.BERGUNG_BEVORSTEHEND) {
-            fehlermeldung = "Nur ein übernommenes Netz mit dem Status „Bergung bevorstehend“ kann als geborgen gemeldet werden.";
+    
+        if (userContext.isAnonym()) {
+            fehlermeldung = "Bitte zuerst eine Person auswählen.";
             return null;
         }
-        if (!istZugeordneteBergendePerson()) {
-            fehlermeldung = "Nur die zugeordnete bergende Person kann dieses Netz als geborgen melden.";
+    
+        try {
+            netzService.alsGeborgenMelden(
+                    ausgewaehltesNetz.getId(),
+                    userContext.getPersonId(),
+                    ausgewaehltesNetz.getVersion()
+            );
+    
+            return "netzuebersicht.xhtml?faces-redirect=true";
+    
+        } catch (IllegalArgumentException | IllegalStateException fehler) {
+            fehlermeldung = fehler.getMessage();
+            return null;
+    
+        } catch (jakarta.persistence.PersistenceException fehler) {
+            fehlermeldung =
+                    "Das Netz konnte nicht als geborgen gemeldet werden. "
+                    + "Bitte öffne die Übersicht erneut.";
             return null;
         }
-        // TODO: Status über den Geisternetz-Service auf GEBORGEN setzen.
-        hinweismeldung = NICHT_GESPEICHERT + " Der Status wurde nicht auf „Geborgen“ geändert.";
-        return null;
     }
 
     public String alsVerschollenMelden() {
         fehlermeldung = null;
         hinweismeldung = null;
+    
         if (ausgewaehltesNetz == null) {
             fehlermeldung = "Es ist kein Netz ausgewählt.";
             return null;
         }
-        NetStatus status = ausgewaehltesNetz.getStatus();
-        if (status != NetStatus.GEMELDET && status != NetStatus.BERGUNG_BEVORSTEHEND) {
-            fehlermeldung = "Nur gemeldete oder übernommene Netze können als verschollen gemeldet werden.";
+    
+        try {
+            netzService.alsVerschollenMelden(
+                    ausgewaehltesNetz.getId(),
+                    ausgewaehltesNetz.getVersion()
+            );
+    
+            // Die Übersicht lädt den aktualisierten Status.
+            return "netzuebersicht.xhtml?faces-redirect=true";
+    
+        } catch (IllegalArgumentException | IllegalStateException fehler) {
+            fehlermeldung = fehler.getMessage();
+            return null;
+    
+        } catch (jakarta.persistence.PersistenceException fehler) {
+            fehlermeldung =
+                    "Das Netz konnte nicht als verschollen gemeldet werden. "
+                    + "Bitte öffne die Übersicht erneut.";
             return null;
         }
-        // TODO: Status über den Geisternetz-Service auf VERSCHOLLEN setzen.
-        // Die Meldung ist auch ohne ausgewählte Person zulässig.
-        hinweismeldung = NICHT_GESPEICHERT + " Der Status wurde nicht auf „Verschollen“ geändert.";
-        return null;
     }
 
     public String statusText(NetStatus status) {

@@ -2,6 +2,7 @@ package de.ghostnet.domain;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.Instant;
 
 import jakarta.persistence.*;
 
@@ -87,6 +88,30 @@ public class Geisternetz {
         this.beschreibung = beschreibung;
         this.meldendePerson = meldendePerson;
         this.gemeldetAm = Instant.now();
+    }
+
+    public void alsGeborgenMelden() {
+        if (status != NetStatus.BERGUNG_BEVORSTEHEND) {
+            throw new IllegalStateException(
+                    "Nur übernommene Netze können als geborgen gemeldet werden."
+            );
+        }
+    
+        this.status = NetStatus.GEBORGEN;
+        this.geborgenAm = Instant.now();
+    }
+
+    public void alsVerschollenMelden() {
+        if (status != NetStatus.GEMELDET
+                && status != NetStatus.BERGUNG_BEVORSTEHEND) {
+            throw new IllegalStateException(
+                    "Nur gemeldete oder zur Bergung vorgesehene Netze "
+                    + "können als verschollen gemeldet werden."
+            );
+        }
+    
+        status = NetStatus.VERSCHOLLEN;
+        verschollenAm = Instant.now();
     }
 
     public Long getId() {

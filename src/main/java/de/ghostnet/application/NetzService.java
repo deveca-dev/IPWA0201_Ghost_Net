@@ -150,4 +150,94 @@ public class NetzService {
         throw fehler;
     }
 }
+
+public void alsGeborgenMelden(
+    Long netzId,
+    Long personId,
+    long erwarteteVersion) {
+
+if (personId == null) {
+    throw new IllegalArgumentException(
+            "Bitte zuerst eine Person auswählen."
+    );
+}
+
+EntityTransaction transaktion = entityManager.getTransaction();
+
+try {
+    transaktion.begin();
+
+    Geisternetz netz = netzRepository.anhandIdLaden(netzId);
+
+    if (netz == null) {
+        throw new IllegalArgumentException(
+                "Das Geisternetz wurde nicht gefunden."
+        );
+    }
+
+    if (netz.getVersion() != erwarteteVersion) {
+        throw new IllegalStateException(
+                "Das Netz wurde zwischenzeitlich geändert. "
+                + "Bitte öffne die Übersicht erneut."
+        );
+    }
+
+    Person bergendePerson = netz.getBergendePerson();
+
+    if (bergendePerson == null
+            || !personId.equals(bergendePerson.getId())) {
+
+        throw new IllegalArgumentException(
+                "Nur die zugeordnete bergende Person "
+                + "kann dieses Netz als geborgen melden."
+        );
+    }
+
+    netz.alsGeborgenMelden();
+
+    transaktion.commit();
+
+} catch (RuntimeException fehler) {
+    if (transaktion.isActive()) {
+        transaktion.rollback();
+    }
+
+    throw fehler;
+}
+}
+
+public void alsVerschollenMelden(Long netzId, long erwarteteVersion) {
+    EntityTransaction transaktion = entityManager.getTransaction();
+
+    try {
+        transaktion.begin();
+
+        Geisternetz netz = netzRepository.anhandIdLaden(netzId);
+
+        if (netz == null) {
+            throw new IllegalArgumentException(
+                    "Das Geisternetz wurde nicht gefunden."
+            );
+        }
+
+        if (netz.getVersion() != erwarteteVersion) {
+            throw new IllegalStateException(
+                    "Das Netz wurde zwischenzeitlich geändert. "
+                    + "Bitte öffne die Übersicht erneut."
+            );
+        }
+
+        // Die Entity prüft, ob der Statuswechsel fachlich erlaubt ist.
+        netz.alsVerschollenMelden();
+
+        transaktion.commit();
+
+    } catch (RuntimeException fehler) {
+        if (transaktion.isActive()) {
+            transaktion.rollback();
+        }
+
+        throw fehler;
+    }
+}
 }
