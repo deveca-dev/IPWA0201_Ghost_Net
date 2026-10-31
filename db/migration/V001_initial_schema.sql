@@ -16,47 +16,51 @@ CREATE TABLE geisternetz (
 
     breitengrad numeric(9,6) NOT NULL,
     laengengrad numeric(9,6) NOT NULL,
-    geschatzte_groesse_m2 numeric(12,2) NOT NULL,
-    beschriebung text,
-    -- Status des Geisternetzes
+    geschaetzte_groesse_m2 numeric(12,2) NOT NULL,
+    beschreibung text,
     status varchar(30) NOT NULL,
 
-    -- Personen, die das Geisternetz gemeldet haben und bergen
     meldende_person_id bigint REFERENCES person(id),
     bergende_person_id bigint REFERENCES person(id),
+
     gemeldet_am timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     uebernommen_am timestamptz,
+    geborgen_am timestamptz,
     verschollen_am timestamptz,
+
     version bigint NOT NULL DEFAULT 0,
-    
-    -- Überpürfen ob der Breiten- und Längengrad zwischen -90 und 90 lietg
+
     CONSTRAINT position_breitengrad CHECK (
         breitengrad BETWEEN -90 AND 90
     ),
-    -- Nun Prüfen oder der Längengrad zwischen -180 und 180 liegt
+
     CONSTRAINT position_laengengrad CHECK (
         laengengrad BETWEEN -180 AND 180
     ),
-    -- Prüfen ob die Größe des Geisternetzes positiv ist
+
     CONSTRAINT groesse_positiv CHECK (
-        geschatzte_groesse_m2 > 0
+        geschaetzte_groesse_m2 > 0
     ),
-    -- Prüfen ob der Status eines Geisternetzes valide ist
+
     CONSTRAINT status_gueltig CHECK (
         status IN (
             'GEMELDET',
             'BERGUNG_BEVORSTEHEND',
             'VERSCHOLLEN',
             'GEBORGEN'
-            )
+        )
     ),
-    -- Prüfen ob die Version des Geisternetzes positiv ist
+
     CONSTRAINT version_positiv CHECK (
         version >= 0
     )
 );
 
-CREATE INDEX netz_status_idx ON geisternetz(status);
-CREATE INDEX netz_bergende_person_idx ON geisternetz(bergende_person_id);
-CREATE INDEX netz_meldende_person_idx ON geisternetz(meldende_person_id);
+CREATE INDEX netz_status_idx
+    ON geisternetz(status);
 
+CREATE INDEX netz_bergende_person_idx
+    ON geisternetz(bergende_person_id);
+
+CREATE INDEX netz_meldende_person_idx
+    ON geisternetz(meldende_person_id);
