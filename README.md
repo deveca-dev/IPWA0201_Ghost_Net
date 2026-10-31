@@ -40,3 +40,12 @@ Stoppe die Datenbank mit Docker
 ```bash
 docker compose down
 ```
+
+# Datenbank-Migrationen
+Um die Migration um laufenden Docker anzuwenden folgender Befehl ausführen:
+```bash
+docker compose exec -T postgres sh -c \
+  'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  -v ON_ERROR_STOP=1 --single-transaction -f -' \
+  < db/migration/V001__initial_schema.sql
+```
