@@ -8,18 +8,26 @@ import de.ghostnet.domain.NetStatus;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
+import de.ghostnet.application.NetzService;
+import jakarta.inject.Inject;
+
 @Named
 @SessionScoped
 public class NetzListeBean implements Serializable {
+
+    @Inject
+    private NetzService netzService;
 
     private static final long serialVersionUID = 1L;
 
     private String statusFilter = "ZU_BERGEN";
 
     public List<Geisternetz> getGeisternetze() {
-        // TODO: Geisternetze über den Geisternetz-Service laden und mit passtZumFilter einschränken.
-        List<Geisternetz> geladen = List.of();
-        return geladen.stream().filter(this::passtZumFilter).toList();
+        List<Geisternetz> geladen = netzService.alleLaden();
+    
+        return geladen.stream()
+                .filter(this::passtZumFilter)
+                .toList();
     }
 
     public boolean passtZumFilter(Geisternetz netz) {

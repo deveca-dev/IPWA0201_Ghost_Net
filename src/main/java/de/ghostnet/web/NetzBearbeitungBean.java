@@ -7,6 +7,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import de.ghostnet.application.NetzService;
+
 import de.ghostnet.domain.Geisternetz;
 import de.ghostnet.domain.NetStatus;
 import de.ghostnet.domain.Person;
@@ -28,6 +30,9 @@ public class NetzBearbeitungBean implements Serializable {
 
     @Inject
     private UserContext userContext;
+
+    @Inject
+    private NetzService netzService;
 
     private BigDecimal breitengrad;
     private BigDecimal laengengrad;
@@ -55,41 +60,81 @@ public class NetzBearbeitungBean implements Serializable {
     public String netzMelden() {
         fehlermeldung = null;
         hinweismeldung = null;
+    
         if (!positionsdatenGueltig()) {
             return null;
         }
-        boolean anonym = anonymMelden || userContext.isAnonym();
-        // TODO: Geisternetz über den Geisternetz-Service speichern.
-        // Bei anonym bleibt die meldende Person leer, sonst die Person aus dem UserContext.
-        if (anonym) {
-            hinweismeldung = NICHT_GESPEICHERT
-                    + " Die Meldung wäre anonym gewesen und hätte keine meldende Person gespeichert.";
-        } else {
-            hinweismeldung = NICHT_GESPEICHERT
-                    + " Als meldende Person wäre „" + userContext.getBenutzername() + "“ vorgesehen gewesen.";
+    
+        Long meldendePersonId = null;
+    
+        if (!anonymMelden && !userContext.isAnonym()) {
+            meldendePersonId = userContext.getPersonId();
         }
-        return null;
+    
+        try {
+            netzService.melden(
+                    breitengrad,
+                    laengengrad,
+                    geschaetzteGroesse,
+                    beschreibung,
+                    meldendePersonId
+            );
+    
+            hinweismeldung = "Das Geisternetz wurde erfolgreich gemeldet.";
+    
+            breitengrad = null;
+            laengengrad = null;
+            geschaetzteGroesse = null;
+            beschreibung = null;
+            anonymMelden = false;
+    
+            return null;
+    
+        } catch (IllegalArgumentException fehler) {
+            fehlermeldung = fehler.getMessage();
+            return null;
+    
+        } catch (jakarta.persistence.PersistenceException fehler) {
+            fehlermeldung = "Das Geisternetz konnte nicht gespeichert werden.";
+            return null;
+        }
     }
 
     public String bergungUebernehmen() {
         fehlermeldung = null;
         hinweismeldung = null;
+    
         if (ausgewaehltesNetz == null) {
             fehlermeldung = "Es ist kein Netz ausgewählt.";
             return null;
         }
-        if (ausgewaehltesNetz.getStatus() != NetStatus.GEMELDET) {
-            fehlermeldung = "Nur gemeldete Netze können zur Bergung übernommen werden.";
-            return null;
-        }
+    
         if (userContext.isAnonym()) {
-            fehlermeldung = "Bitte zuerst einen Benutzernamen auswählen. Anonym kann keine Bergung übernommen werden.";
+            fehlermeldung =
+                    "Bitte zuerst einen Benutzernamen auswählen.";
             return null;
         }
-        // TODO: Bergung über den Geisternetz-Service der Person aus dem UserContext zuordnen.
-        hinweismeldung = NICHT_GESPEICHERT
-                + " Die Übernahme durch „" + userContext.getBenutzername() + "“ wurde nicht ausgeführt.";
-        return null;
+    
+        try {
+            netzService.bergungUebernehmen(
+                    ausgewaehltesNetz.getId(),
+                    userContext.getPersonId(),
+                    ausgewaehltesNetz.getVersion()
+            );
+    
+            // Zur Übersicht zurück: Dort werden die Daten neu geladen.
+            return "netzuebersicht.xhtml?faces-redirect=true";
+    
+        } catch (IllegalArgumentException | IllegalStateException fehler) {
+            fehlermeldung = fehler.getMessage();
+            return null;
+    
+        } catch (jakarta.persistence.PersistenceException fehler) {
+            fehlermeldung =
+                    "Die Bergung konnte nicht übernommen werden. "
+                    + "Bitte lade die Übersicht erneut.";
+            return null;
+        }
     }
 
     public String alsGeborgenMelden() {

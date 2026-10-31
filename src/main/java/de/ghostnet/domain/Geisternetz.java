@@ -56,6 +56,24 @@ public class Geisternetz {
     protected Geisternetz() {
     }
 
+    public void bergungUebernehmen(Person person) {
+        if (person == null) {
+            throw new IllegalArgumentException(
+                    "Eine bergende Person ist erforderlich."
+            );
+        }
+    
+        if (status != NetStatus.GEMELDET) {
+            throw new IllegalStateException(
+                    "Nur gemeldete Netze können übernommen werden."
+            );
+        }
+    
+        this.bergendePerson = person;
+        this.uebernommenAm = Instant.now();
+        this.status = NetStatus.BERGUNG_BEVORSTEHEND;
+    }
+
     public Geisternetz(
             BigDecimal breitengrad,
             BigDecimal laengengrad,

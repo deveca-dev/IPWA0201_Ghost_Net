@@ -25,10 +25,6 @@
                 <h:outputText value="#{userContext.benutzername}" rendered="#{not userContext.anonym}"/>
             </p>
 
-            <h:panelGroup layout="block" styleClass="meldung hinweis">
-                <h:outputText value="#{netzListeBean.backendHinweis}"/>
-            </h:panelGroup>
-
             <h:form id="filter">
                 <h:outputLabel for="status" value="Status"/>
                 <h:selectOneMenu id="status" value="#{netzListeBean.statusFilter}">
