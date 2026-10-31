@@ -14,9 +14,6 @@
             <h1>Ghost Net Fishing</h1>
             <p>Wähle einen vorhandenen Benutzernamen, lege einen neuen an oder fahre anonym fort.</p>
 
-            <h:panelGroup layout="block" styleClass="meldung hinweis">
-                <h:outputText value="#{landingBean.personenHinweis}"/>
-            </h:panelGroup>
             <h:panelGroup layout="block" styleClass="meldung fehler" rendered="#{not empty landingBean.fehlermeldung}">
                 <h:outputText value="#{landingBean.fehlermeldung}"/>
             </h:panelGroup>

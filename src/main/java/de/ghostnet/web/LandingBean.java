@@ -13,7 +13,7 @@ import de.ghostnet.application.PersonService;
 public class LandingBean {
 
     private static final String NETZUEBERSICHT = "netzuebersicht.xhtml?faces-redirect=true";
-    private static final int MAX_BENUTZERNAME = 50;
+    private static final int MAX_BENUTZERNAME = 30;
 
     @Inject
     private UserContext userContext;
