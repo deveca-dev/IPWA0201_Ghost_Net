@@ -32,7 +32,7 @@
                 <h:inputText id="breitengrad" value="#{netzBearbeitungBean.breitengrad}" required="true"
                              requiredMessage="Bitte den Breitengrad angeben."
                              converterMessage="Bitte den Breitengrad als Zahl angeben, zum Beispiel 54,321.">
-                    <f:convertNumber maxFractionDigits="6"/>
+                    <f:converter converterId="koordinatenConverter"/>
                 </h:inputText>
                 <h:message for="breitengrad" styleClass="feld-fehler"/>
 
@@ -40,7 +40,7 @@
                 <h:inputText id="laengengrad" value="#{netzBearbeitungBean.laengengrad}" required="true"
                              requiredMessage="Bitte den Längengrad angeben."
                              converterMessage="Bitte den Längengrad als Zahl angeben, zum Beispiel 10,125.">
-                    <f:convertNumber maxFractionDigits="6"/>
+                    <f:converter converterId="koordinatenConverter"/>
                 </h:inputText>
                 <h:message for="laengengrad" styleClass="feld-fehler"/>
 
